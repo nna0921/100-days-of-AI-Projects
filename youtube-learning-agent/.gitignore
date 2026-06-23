@@ -12,3 +12,6 @@ __pycache__/
 .vscode/
 
 *.log.env
+
+credentials.json
+get_token.py
