@@ -5,10 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "fastapi>=0.138.0",
+    "google-api-python-client>=2.197.0",
+    "google-auth-httplib2>=0.4.0",
+    "google-auth-oauthlib>=1.4.0",
     "google-genai>=2.9.0",
     "ipykernel>=7.3.0",
+    "markdown>=3.10.2",
     "openai>=2.43.0",
     "python-dotenv>=1.2.2",
+    "sqlmodel>=0.0.38",
+    "supabase>=2.31.0",
+    "uvicorn>=0.49.0",
     "youtube-transcript-api>=1.2.4",
 ]
 

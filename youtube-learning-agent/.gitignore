@@ -1,21 +1,17 @@
-# Virtual environment
 .venv/
 venv/
-
-# Environment variables
 .env
 
-# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# macOS
 .DS_Store
 
-# VS Code
 .vscode/
 
-# Logs
 *.log.env
+
+credentials.json
+get_token.py
