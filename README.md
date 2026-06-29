@@ -1,10 +1,10 @@
-# 🤖 100 Days of AI Projects
+# 100 Days of AI Projects
 
 Welcome to my **100 Days of AI Projects** journey! 
 
 This repository documents my commitment to building **one AI project every day for 100 days**. The goal is simple: learn consistently, build practical applications, and share everything I create along the way.
 
-## 🎯 Goals
+## Goals
 
 Throughout this challenge, I will:
 
@@ -16,11 +16,11 @@ Throughout this challenge, I will:
 
 ## 📂 Projects
 
-### ✅ Day 1 — YouTube Learning Agent
+### Day 1 — YouTube Learning Agent
 
 An AI-powered learning assistant that transforms YouTube videos into structured study material, making it easier to learn from educational content.
 
-### 🚧 Day 2 — RBAC-RAG Chatbot
+### Day 2 — RBAC-RAG Chatbot
 
 A Retrieval-Augmented Generation (RAG) chatbot with **Role-Based Access Control (RBAC)**, designed to explore secure AI applications with different user permissions.
 
