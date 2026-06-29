@@ -1,7 +1,8 @@
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
-from langchain_community.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
+from langchain_chroma import Chroma
+from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,13 +18,38 @@ Question: {question}
 
 Answer:"""
 
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
+
+def deduplicate_docs(docs, limit: int = 8):
+    """Keep the best-ranked copy of each chunk and preserve source diversity."""
+    unique_docs = []
+    seen_content = set()
+
+    for doc in docs:
+        content_key = doc.page_content.strip()
+        if content_key in seen_content:
+            continue
+        seen_content.add(content_key)
+        unique_docs.append(doc)
+        if len(unique_docs) == limit:
+            break
+
+    return unique_docs
+
+
+def format_docs(docs):
+    return "\n\n---\n\n".join(
+        f"[Source: {doc.metadata.get('source', 'Unknown document')}]\n{doc.page_content}"
+        for doc in docs
+    )
 
 def get_rag_response(query: str, allowed_departments: list[str]) -> dict:
     retriever = vectorstore.as_retriever(
         search_kwargs={
-            "k": 5,
+            # Fetch broadly because the current local collection can contain
+            # repeated ingestions. Results are deduplicated before generation.
+            "k": 24,
             "filter": {"department": {"$in": allowed_departments}}
         }
     )
@@ -34,24 +60,31 @@ def get_rag_response(query: str, allowed_departments: list[str]) -> dict:
     )
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
-        temperature=0.2
+        model="gemini-2.5-flash",
+        temperature=0.2,
+        max_retries=0,
+        timeout=10.0
     )
 
-    chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        retriever=retriever,
-        return_source_documents=True,
-        chain_type_kwargs={"prompt": prompt}
+    # Fetch source documents separately so we can return them
+    source_docs = deduplicate_docs(retriever.invoke(query))
+
+    # Build the LCEL chain
+    chain = (
+        {"context": lambda _: format_docs(source_docs), "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
     )
 
-    result = chain.invoke({"query": query})
+    answer = chain.invoke(query)
 
-    sources = list(set(
-        doc.metadata["source"] for doc in result["source_documents"]
+    # dict preserves retrieval order while removing repeated filenames.
+    sources = list(dict.fromkeys(
+        doc.metadata["source"] for doc in source_docs
     ))
 
     return {
-        "answer": result["result"],
+        "answer": answer,
         "sources": sources
     }
