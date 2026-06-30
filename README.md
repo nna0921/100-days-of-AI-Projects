@@ -19,6 +19,7 @@ Throughout this challenge, I will:
 ### Day 1 — YouTube Learning Agent
 
 An AI-powered learning assistant that transforms YouTube videos into structured study material, making it easier to learn from educational content.
+Email this agent on **youtubelearningagent@gmail.com** to get a reply!
 
 ### Day 2 — RBAC-RAG Chatbot
 
