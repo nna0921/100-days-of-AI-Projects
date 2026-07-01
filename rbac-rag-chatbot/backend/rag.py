@@ -47,8 +47,6 @@ def format_docs(docs):
 def get_rag_response(query: str, allowed_departments: list[str]) -> dict:
     retriever = vectorstore.as_retriever(
         search_kwargs={
-            # Fetch broadly because the current local collection can contain
-            # repeated ingestions. Results are deduplicated before generation.
             "k": 24,
             "filter": {"department": {"$in": allowed_departments}}
         }
@@ -66,10 +64,8 @@ def get_rag_response(query: str, allowed_departments: list[str]) -> dict:
         timeout=10.0
     )
 
-    # Fetch source documents separately so we can return them
     source_docs = deduplicate_docs(retriever.invoke(query))
 
-    # Build the LCEL chain
     chain = (
         {"context": lambda _: format_docs(source_docs), "question": RunnablePassthrough()}
         | prompt
@@ -79,7 +75,6 @@ def get_rag_response(query: str, allowed_departments: list[str]) -> dict:
 
     answer = chain.invoke(query)
 
-    # dict preserves retrieval order while removing repeated filenames.
     sources = list(dict.fromkeys(
         doc.metadata["source"] for doc in source_docs
     ))
