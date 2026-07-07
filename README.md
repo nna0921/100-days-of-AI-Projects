@@ -25,6 +25,10 @@ Email this agent on **youtubelearningagent@gmail.com** to get a reply!
 
 A Retrieval-Augmented Generation (RAG) chatbot with **Role-Based Access Control (RBAC)**, designed to explore secure AI applications with different user permissions.
 
+### Day 3 — Voice-to-Jira
+
+An AI assistant that uses voice input to create Jira tickets, demonstrating the end-to-end pipeline of transcription, field extraction, and ticket creation.
+
 > More exciting AI projects are coming soon!
 
 ## Why This Challenge?
