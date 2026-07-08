@@ -19,10 +19,9 @@ creating the Jira ticket.
 ```bash
 pip install -r requirements.txt --break-system-packages
 cp .env.example .env
-# fill in .env with your real Jira + Gemini credentials
 ```
 
-Get a free Gemini API key at https://aistudio.google.com/apikey -- no card required.
+Get a free Gemini API key at https://aistudio.google.com/apikey 
 
 ## Run the full app
 

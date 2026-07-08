@@ -2,13 +2,13 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-from ticket_schema import REQUIRED_FIELDS, is_complete
-from jira_tool import create_jira_ticket
+from ticket_schema import REQUIRED_FIELDS, OPTIONAL_FIELDS, is_complete
+from jira_tool import create_jira_ticket, find_similar_open_tickets, JiraConnection
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-MODEL_NAME = "gemini-2.5-flash" 
+MODEL_NAME = "gemini-2.5-flash"  
 
 
 UPDATE_FIELDS_TOOL = {
@@ -41,6 +41,15 @@ UPDATE_FIELDS_TOOL = {
                 "type": "string",
                 "enum": ["Highest", "High", "Medium", "Low"],
             },
+            "assignee_name": {
+                "type": "string",
+                "description": "Name or email of who to assign this to -- only if the user says one, never ask for this.",
+            },
+            "labels": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Labels/tags the user mentioned -- only if given, never ask for this.",
+            },
         },
     },
 }
@@ -60,19 +69,26 @@ CREATE_TICKET_TOOL = {
             "summary": {"type": "string"},
             "description": {"type": "string"},
             "priority": {"type": "string"},
+            "assignee_name": {"type": "string"},
+            "labels": {"type": "array", "items": {"type": "string"}},
         },
-        "required": ["project", "issuetype", "summary", "description", "priority"],
+        "required": ["project", "issuetype", "summary", "priority"],
     },
 }
 
 SYSTEM_PROMPT = """You are a helpful assistant that gathers details for a Jira ticket through conversation.
 
-Track these fields: project, issuetype, summary, description, priority.
+REQUIRED fields (ask about these if missing): project, issuetype, summary, priority.
+OPTIONAL fields: description, assignee_name, labels.
 
 Rules:
-- Ask ONE question at a time for whatever is still missing. Don't interrogate -- sound like a helpful coworker.
+- Ask ONE question at a time for whatever REQUIRED info is still missing. Don't interrogate -- sound like a helpful coworker.
+- Never ask about the optional fields. Only record them if the user brings them up unprompted.
+- IMPORTANT: You should AI-generate 'labels' based on the context. Do not ask the user for them, just generate them yourself when calling update_ticket_fields.
+- For 'description', you can auto-generate a structured description (e.g., Steps to reproduce, Expected, Actual) based on what the user tells you.
 - Every time you learn something new (even partial), call update_ticket_fields with just the new info.
-- Once all fields are filled, summarize the full ticket back to the user in plain text and explicitly ask "Should I go ahead and create this ticket?"
+- Once all REQUIRED fields are filled, check the update_ticket_fields result for similar_existing_tickets. If any are listed, mention them first ("This looks similar to VT-3: 'login crash on iOS' -- want me to file a new one anyway, or was that it?") before asking for confirmation. If empty, skip straight to summarizing.
+- When summarizing, include any optional fields you've captured (like your generated priority, labels, and formatted description), then explicitly ask "Should I go ahead and create this ticket?"
 - Only call create_jira_ticket after the user has clearly confirmed in their most recent message. Never call it speculatively.
 - If the user is speaking a non-English language, reply to them in that same language, but keep all field VALUES you extract in English (Jira fields should be in English).
 - If the user changes or corrects a field they already gave, call update_ticket_fields again with the corrected value.
@@ -83,10 +99,13 @@ class TicketSession:
     """Holds one conversation's state: the chat history, the ticket draft,
     and whether the user has been shown a summary and can now confirm."""
 
-    def __init__(self):
-        self.draft = dict(REQUIRED_FIELDS)
+    def __init__(self, jira_conn: JiraConnection | None = None):
+        self.draft = {**REQUIRED_FIELDS, **OPTIONAL_FIELDS}
         self.awaiting_confirmation = False
         self.ticket_created = False
+        self.ticket_url = None
+        self.duplicate_warning_shown = False
+        self.jira_conn = jira_conn
 
         self.model = genai.GenerativeModel(
             model_name=MODEL_NAME,
@@ -99,12 +118,28 @@ class TicketSession:
         if name == "update_ticket_fields":
             for key, value in args.items():
                 if key in self.draft and value:
+                    if type(value).__name__ == "RepeatedComposite":
+                        value = list(value)
                     self.draft[key] = value
+
+            just_became_complete = is_complete(self.draft) and not self.awaiting_confirmation
             self.awaiting_confirmation = is_complete(self.draft)
+
+            similar: list[dict] = []
+            if just_became_complete and not self.duplicate_warning_shown:
+                try:
+                    similar = find_similar_open_tickets(
+                        self.draft["project"], self.draft["summary"], conn=self.jira_conn
+                    )
+                except Exception:
+                    similar = [] 
+                self.duplicate_warning_shown = True
+
             return {
                 "status": "ok",
                 "draft": self.draft,
                 "complete": is_complete(self.draft),
+                "similar_existing_tickets": similar,
             }
 
         if name == "create_jira_ticket":
@@ -120,10 +155,14 @@ class TicketSession:
                     summary=self.draft["summary"],
                     description=self.draft["description"],
                     priority=self.draft["priority"],
+                    assignee_name=self.draft.get("assignee_name"),
+                    labels=self.draft.get("labels"),
+                    conn=self.jira_conn,
                 )
                 self.ticket_created = True
+                self.ticket_url = result.get("url")
                 return {"status": "created", "jira_response": result}
-            except Exception as exc:  # noqa: BLE001 -- surface any failure to the model
+            except Exception as exc: 
                 return {"status": "error", "reason": str(exc)}
 
         return {"status": "error", "reason": f"Unknown tool: {name}"}
@@ -134,8 +173,6 @@ class TicketSession:
         response = self.chat.send_message(user_text)
         reply_parts: list[str] = []
 
-        # A single user turn can trigger a chain of tool calls before the
-        # model produces its final text reply -- loop until it stops calling tools.
         while True:
             parts = response.candidates[0].content.parts
             function_calls = [p.function_call for p in parts if p.function_call]
@@ -177,7 +214,7 @@ def main():
         print(f"\nAgent: {reply}\n")
 
         if session.ticket_created:
-            print("--- Ticket created. Draft used:", session.draft, "---")
+            print(f"--- Ticket created: {session.ticket_url} ---")
             break
 
 
