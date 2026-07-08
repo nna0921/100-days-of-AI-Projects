@@ -1,26 +1,3 @@
-"""
-Atlassian OAuth 2.0 (3LO) flow -- lets a visitor connect their own Jira Cloud
-site instead of tickets always landing in the owner's site.
-
-Setup (one-time, free, no card):
-  1. Go to https://developer.atlassian.com/console/myapps/ and create an
-     OAuth 2.0 (3LO) app.
-  2. Under "Permissions", add the Jira API with scopes:
-       read:jira-work  write:jira-work  read:jira-user  offline_access
-     (offline_access is what gets you a refresh token, so the connection
-     survives past the ~1 hour access-token expiry.)
-  3. Under "Authorization", set the callback URL to:
-       http://localhost:8000/auth/jira/callback   (local dev)
-       https://your-app.onrender.com/auth/jira/callback   (deployed)
-  4. Copy the Client ID and Secret into your .env as ATLASSIAN_CLIENT_ID
-     and ATLASSIAN_CLIENT_SECRET.
-
-This module only talks to Atlassian's own OAuth endpoints -- no cost, same
-free Jira REST API you're already using, just called with a bearer token
-scoped to whichever site the visitor picked instead of basic auth against
-your own site.
-"""
-
 import os
 import secrets
 import time
@@ -43,14 +20,8 @@ AUTHORIZE_URL = "https://auth.atlassian.com/authorize"
 TOKEN_URL = "https://auth.atlassian.com/oauth/token"
 ACCESSIBLE_RESOURCES_URL = "https://api.atlassian.com/oauth/token/accessible-resources"
 
-# In-memory session store: session_id -> {access_token, refresh_token,
-# expires_at, cloud_id, site_url, site_name}.
-# Fine for a portfolio demo -- resets if the server restarts (e.g. Render's
-# free tier spinning down), so a visitor may need to reconnect after a long
-# idle period. Swap for a real DB if this needs to survive that.
 SESSIONS: dict[str, dict] = {}
 
-# Short-lived store for the CSRF "state" param between /login and /callback.
 _PENDING_STATES: dict[str, float] = {}
 
 
@@ -106,12 +77,6 @@ def refresh_tokens(refresh_token: str) -> dict:
 
 
 def get_accessible_site(access_token: str) -> dict:
-    """
-    A single Atlassian account can have multiple Jira sites. For a portfolio
-    demo, we keep it simple and use the first one -- good enough unless the
-    visitor's account manages several sites, in which case you'd extend this
-    into a "pick a site" step.
-    """
     response = httpx.get(
         ACCESSIBLE_RESOURCES_URL,
         headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
@@ -120,14 +85,10 @@ def get_accessible_site(access_token: str) -> dict:
     sites = response.json()
     if not sites:
         raise ValueError("This Atlassian account has no accessible Jira sites.")
-    return sites[0]  # {"id": cloudId, "url": "https://x.atlassian.net", "name": "..."}
+    return sites[0] 
 
 
 def start_connection(code: str) -> str:
-    """
-    Full callback-time flow: code -> tokens -> site info -> stored session.
-    Returns a new session_id for the caller to set as a cookie.
-    """
     tokens = exchange_code_for_tokens(code)
     site = get_accessible_site(tokens["access_token"])
 
@@ -135,7 +96,7 @@ def start_connection(code: str) -> str:
     SESSIONS[session_id] = {
         "access_token": tokens["access_token"],
         "refresh_token": tokens.get("refresh_token"),
-        "expires_at": time.time() + tokens.get("expires_in", 3600) - 30,  # 30s safety margin
+        "expires_at": time.time() + tokens.get("expires_in", 3600) - 30,  
         "cloud_id": site["id"],
         "site_url": site["url"],
         "site_name": site.get("name", site["url"]),

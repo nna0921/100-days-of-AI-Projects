@@ -1,21 +1,3 @@
-"""
-Text-mode prototype of the voice-to-Jira conversational agent.
-
-This is deliberately NOT wired to voice or a UI yet -- it's step 2 from the
-plan: prove the conversation logic (gather fields -> confirm -> create)
-works end to end before adding WebSockets, audio chunking, or a frontend.
-
-Run it, type like you're dictating a ticket, and watch it ask for whatever
-is missing, summarize, then wait for your explicit "yes" before actually
-calling Jira.
-
-Free-tier notes (see README.md for the full rundown):
-- Uses gemini-1.5-flash, which is on Gemini's free tier as of mid-2026.
-- Each user turn costs 1 Gemini API call (plus one more per tool-call
-  round-trip within that turn). A whole ticket conversation is usually
-  4-8 turns, so well within the ~1,500 requests/day free cap.
-"""
-
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -26,9 +8,8 @@ from jira_tool import create_jira_ticket, find_similar_open_tickets, JiraConnect
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-MODEL_NAME = "gemini-2.5-flash"  # free tier as of mid-2026 -- see README
+MODEL_NAME = "gemini-2.5-flash"  
 
-# --- Tool definitions Gemini can call -------------------------------------
 
 UPDATE_FIELDS_TOOL = {
     "name": "update_ticket_fields",
@@ -124,8 +105,6 @@ class TicketSession:
         self.ticket_created = False
         self.ticket_url = None
         self.duplicate_warning_shown = False
-        # None means "use the owner's own site" -- see jira_tool.default_connection().
-        # Set to a visitor's connection (from oauth.py) once they click "Connect your Jira".
         self.jira_conn = jira_conn
 
         self.model = genai.GenerativeModel(
@@ -148,15 +127,12 @@ class TicketSession:
 
             similar: list[dict] = []
             if just_became_complete and not self.duplicate_warning_shown:
-                # Free duplicate check, run once, right as we're about to ask
-                # the user to confirm -- catches "didn't I already file this?"
-                # before a redundant ticket gets created.
                 try:
                     similar = find_similar_open_tickets(
                         self.draft["project"], self.draft["summary"], conn=self.jira_conn
                     )
                 except Exception:
-                    similar = []  # never block the conversation over a search failing
+                    similar = [] 
                 self.duplicate_warning_shown = True
 
             return {
@@ -167,8 +143,6 @@ class TicketSession:
             }
 
         if name == "create_jira_ticket":
-            # This is the gate: the model saying "call this" is not enough.
-            # Our own code decides whether it's actually allowed to happen.
             if not self.awaiting_confirmation:
                 return {
                     "status": "rejected",
@@ -188,7 +162,7 @@ class TicketSession:
                 self.ticket_created = True
                 self.ticket_url = result.get("url")
                 return {"status": "created", "jira_response": result}
-            except Exception as exc:  # noqa: BLE001 -- surface any failure to the model
+            except Exception as exc: 
                 return {"status": "error", "reason": str(exc)}
 
         return {"status": "error", "reason": f"Unknown tool: {name}"}
@@ -199,8 +173,6 @@ class TicketSession:
         response = self.chat.send_message(user_text)
         reply_parts: list[str] = []
 
-        # A single user turn can trigger a chain of tool calls before the
-        # model produces its final text reply -- loop until it stops calling tools.
         while True:
             parts = response.candidates[0].content.parts
             function_calls = [p.function_call for p in parts if p.function_call]

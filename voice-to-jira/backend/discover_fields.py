@@ -1,21 +1,3 @@
-"""
-Run this once per project to find the real field IDs for fields Jira treats
-as "custom" on your specific site -- Team, Sprint, and Story point estimate
-don't have fixed IDs across Jira instances, so hardcoding them would silently
-break on anyone else's site (including yours, if you ever create a second
-project).
-
-Usage:
-    python discover_fields.py VT Bug
-
-This prints every field available when creating a "Bug" in project "VT",
-including the customfield_XXXXX IDs for Team/Sprint/Story points. Copy the
-ones you want into jira_tool.py's create_jira_ticket, the same way "epic" is
-handled there for the standard "parent" field.
-
-Free to run -- it's a single GET against your existing Jira account.
-"""
-
 import os
 import sys
 import httpx

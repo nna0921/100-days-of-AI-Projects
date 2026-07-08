@@ -11,7 +11,6 @@ import oauth
 
 app = FastAPI()
 
-# Get the directory of the current file (backend) and find index.html in the parent
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 INDEX_PATH = os.path.join(BASE_DIR, "..", "index.html")
 
