@@ -4,7 +4,14 @@ import json
 import os
 import re
 
-from sociavault_api import ViralPost
+from reddit_api import ViralPost
+
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash"
+DEFAULT_GEMINI_FALLBACK_MODELS = ["gemini-3.1-flash-lite"]
+
+
+class IdeaGenerationError(RuntimeError):
+    pass
 
 
 def generate_ideas(
@@ -12,14 +19,19 @@ def generate_ideas(
     offering: str,
     audience: str,
     tone: str,
-    reels: list[ViralPost],
+    posts: list[ViralPost],
+    allow_local_fallback: bool = True,
 ) -> list[dict]:
     api_key = os.getenv("GEMINI_API_KEY")
     if api_key:
-        ideas = _generate_with_gemini(api_key, niche, offering, audience, tone, reels)
+        ideas = _generate_with_gemini(api_key, niche, offering, audience, tone, posts)
         if ideas:
             return ideas
-    return _generate_locally(niche, offering, audience, tone, reels)
+        if not allow_local_fallback:
+            raise IdeaGenerationError("Gemini returned no usable ideas.")
+    elif not allow_local_fallback:
+        raise IdeaGenerationError("GEMINI_API_KEY is missing, so AI write-up generation cannot run.")
+    return _generate_locally(niche, offering, audience, tone, posts)
 
 
 def _generate_with_gemini(
@@ -28,76 +40,104 @@ def _generate_with_gemini(
     offering: str,
     audience: str,
     tone: str,
-    reels: list[ViralPost],
+    posts: list[ViralPost],
 ) -> list[dict]:
     try:
         from google import genai
     except ImportError:
         return []
 
-    client = genai.Client(api_key=api_key)
-    source_reels = [
+    try:
+        from google.genai import types
+    except ImportError:
+        types = None
+
+    timeout_ms = int(os.getenv("GEMINI_TIMEOUT_MS", "20000"))
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(timeout=timeout_ms) if types else None,
+    )
+    source_posts = [
         {
             "url": post.url,
-            "caption": post.caption,
-            "transcript": post.transcript,
-            "likes": post.like_count,
-            "comments": post.comment_count,
-            "plays": post.play_count,
+            "subreddit": post.subreddit,
+            "title": post.title,
+            "body": post.body,
+            "top_comment": post.top_comment,
             "score": post.score,
+            "comments": post.comment_count,
+            "viral_score": post.viral_score,
         }
-        for post in reels[:2]
+        for post in posts[:2]
     ]
+
     prompt = f"""
 You are a senior Instagram content strategist.
-
-Goal: Analyze viral Instagram reels, extract their reusable content pattern, then create original ideas for the user's offering.
+Goal: Analyze viral Reddit posts, extract their reusable hook/narrative pattern
+(the thing that made people upvote and comment), then create original Instagram
+reel/post ideas for the user's offering, adapted to Instagram's short-form format.
 
 User niche: {niche}
 Target audience: {audience}
 Offering: {offering}
 Tone: {tone}
 
-Viral source reels:
-{json.dumps(source_reels, indent=2)}
+Viral source posts (from Reddit, used only as pattern inspiration, not to be copied):
+{json.dumps(source_posts, indent=2)}
 
 Return only valid JSON:
 {{
   "ideas": [
     {{
       "source_pattern": "the viral structure in plain English",
-      "hook": "new original hook for the user's offering",
+      "hook": "new original hook for the user's offering, native to Instagram",
       "caption": "original Instagram caption",
       "reel_outline": ["shot 1", "shot 2", "shot 3"],
       "cta": "short CTA",
       "why_it_maps": "why this uses the same pattern without copying",
-      "source_url": "source reel URL"
+      "source_url": "source reddit post URL"
     }}
   ]
 }}
 
 Rules:
 - Create at most 2 ideas.
-- Each idea should be a variation based on one of the top source reels.
-- Do not copy phrases from the source caption.
-- Keep hooks specific and native to Instagram.
-- If transcript exists, prioritize the opening spoken/on-screen hook.
+- Each idea should be a variation based on one of the top source posts.
+- Do not copy phrases from the source title/body/comment.
+- Translate the Reddit-native structure (long text, discussion thread) into an
+  Instagram-native structure (visual hook in first 2 seconds, short spoken/on-screen text).
+- Keep hooks specific, not generic.
 - Make the output useful for the user's offering, not just a generic caption.
 """.strip()
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-        )
-    except Exception:
-        return []
+    errors: list[str] = []
+    for model in _gemini_model_candidates():
+        try:
+            response = client.models.generate_content(model=model, contents=prompt)
+            break
+        except Exception as exc:
+            errors.append(f"{model}: {exc}")
+    else:
+        raise IdeaGenerationError("Gemini generation failed. " + " | ".join(errors))
 
     try:
         parsed = json.loads(_extract_json(getattr(response, "text", "") or ""))
-    except json.JSONDecodeError:
-        return []
+    except json.JSONDecodeError as exc:
+        raise IdeaGenerationError("Gemini returned non-JSON output. Try again.") from exc
     return _normalize_ideas(parsed.get("ideas", []))
+
+
+def _gemini_model_candidates() -> list[str]:
+    configured = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip()
+    fallback = os.getenv("GEMINI_FALLBACK_MODELS", ",".join(DEFAULT_GEMINI_FALLBACK_MODELS))
+    models = [configured]
+    models.extend(model.strip() for model in fallback.split(",") if model.strip())
+
+    deduped: list[str] = []
+    for model in models:
+        if model not in deduped:
+            deduped.append(model)
+    return deduped
 
 
 def _generate_locally(
@@ -105,10 +145,10 @@ def _generate_locally(
     offering: str,
     audience: str,
     tone: str,
-    reels: list[ViralPost],
+    posts: list[ViralPost],
 ) -> list[dict]:
     ideas: list[dict] = []
-    for index, post in enumerate(reels[:2], start=1):
+    for index, post in enumerate(posts[:2], start=1):
         pattern = infer_pattern(post)
         hook = local_hook(pattern, offering, audience, index)
         ideas.append(
@@ -139,16 +179,16 @@ def _generate_locally(
 
 
 def infer_pattern(post: ViralPost) -> str:
-    text = f"{post.caption} {post.transcript}".lower()
-    if re.search(r"\b\d+\b", text) or "ways" in text or "mistakes" in text:
+    text = f"{post.title} {post.body} {post.top_comment}".lower()
+    if re.search(r"\b\d+\b", text) or "ways" in text or "mistakes" in text or "tips" in text:
         return "Numbered list hook with quick, repeatable takeaways"
-    if "story" in text or "from " in text or "first" in text:
-        return "Founder-style story arc with a transformation moment"
-    if "which" in text or "?" in text:
+    if "update" in text or "story" in text or "happened to me" in text or "i was" in text:
+        return "Founder/personal-story arc with a transformation moment"
+    if "?" in post.title or "am i" in text or "which" in text:
         return "Question-led engagement hook that invites comments"
-    if "when" in text:
-        return "Relatable moment hook with a simple payoff"
-    return "Aspirational product-led hook with a clear visual promise"
+    if "unpopular opinion" in text or "hot take" in text:
+        return "Contrarian take that challenges a common assumption"
+    return "Relatable moment hook with a simple payoff"
 
 
 def local_hook(pattern: str, offering: str, audience: str, index: int) -> str:
@@ -159,6 +199,8 @@ def local_hook(pattern: str, offering: str, audience: str, index: int) -> str:
     ]
     if "question" in pattern.lower():
         return f"Which part of {offering} would change your week fastest?"
+    if "contrarian" in pattern.lower():
+        return f"Unpopular opinion: most advice about {offering.split(' for ')[0].lower()} is backwards"
     return templates[(index - 1) % len(templates)]
 
 
