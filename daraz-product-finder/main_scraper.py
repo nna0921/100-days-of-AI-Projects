@@ -40,7 +40,12 @@ def get_products(category_slug: str, limit: int):
         if not item_url:
             continue
         full_url = "https:" + item_url if item_url.startswith("//") else item_url
-        match = re.search(r"-i(\d+)", full_url)
+        # The actual item ID is always the -i<digits> segment right before
+        # ".html". Product slugs can contain earlier "-i<digits>" false
+        # matches (e.g. a model name like "I7" in the title becomes "-i7-"
+        # in the slug), so anchor to the ".html" suffix instead of taking
+        # the first match.
+        match = re.search(r"-i(\d+)\.html", full_url)
         if not match:
             continue
         products.append({
@@ -48,6 +53,13 @@ def get_products(category_slug: str, limit: int):
             "item_id": match.group(1),
             "url": full_url,
             "rating": item.get("ratingScore"),
+            "price": item.get("price"),
+            "original_price": item.get("originalPrice"),
+            "discount": item.get("discount"),
+            "review_count": item.get("review"),
+            "seller_name": item.get("sellerName"),
+            "seller_id": item.get("sellerId"),
+            "description": item.get("description"),
         })
         if len(products) >= limit:
             break
@@ -76,6 +88,11 @@ def get_reviews(item_id: str, page_size: int):
                 "text": content,
                 "date": r.get("reviewTime"),
                 "review_id": r.get("reviewRateId"),
+                "rating": r.get("rating"),
+                "grade_items": r.get("gradeItems"),
+                "is_purchased": r.get("isPurchased"),
+                "sku_info": r.get("skuInfo"),
+                "up_votes": r.get("upVotes"),
             })
     return reviews
 
@@ -95,6 +112,13 @@ def main():
             "product_url": product["url"],
             "item_id": product["item_id"],
             "rating": product["rating"],
+            "price": product["price"],
+            "original_price": product["original_price"],
+            "discount": product["discount"],
+            "review_count": product["review_count"],
+            "seller_name": product["seller_name"],
+            "seller_id": product["seller_id"],
+            "description": product["description"],
             "reviews": reviews,
         })
 
