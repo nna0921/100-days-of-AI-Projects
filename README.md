@@ -1,5 +1,7 @@
 # 100 Days of AI Projects
 
+<img width="659" height="411" alt="Screenshot 2026-07-14 at 3 13 34 pm" src="https://github.com/user-attachments/assets/eb85a36d-1244-4e9f-a904-868a75435b4f" />
+
 Welcome to my **100 Days of AI Projects** journey! 
 
 This repository documents my commitment to building **one AI project every day for 100 days**. The goal is simple: learn consistently, build practical applications, and share everything I create along the way.
