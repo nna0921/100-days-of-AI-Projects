@@ -1,4 +1,3 @@
-# 100 Days of AI Projects
 <p align="center">
 <img width="659" height="411" alt="Screenshot 2026-07-14 at 3 13 34 pm" src="https://github.com/user-attachments/assets/eb85a36d-1244-4e9f-a904-868a75435b4f" />
 </p>
