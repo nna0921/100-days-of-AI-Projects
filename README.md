@@ -22,23 +22,32 @@ Throughout this challenge, I will:
 
 An AI-powered learning assistant that transforms YouTube videos into structured study material, making it easier to learn from educational content.
 Email this agent on **youtubelearningagent@gmail.com** to get a reply!
+
 [![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair-904315355_ai-generativeai-gemini-activity-7477677370947264512-4R4h?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
 
 ### 2 - RBAC-RAG Chatbot
 
 A Retrieval-Augmented Generation (RAG) chatbot with **Role-Based Access Control (RBAC)**, designed to explore secure AI applications with different user permissions.
 
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair-904315355_langchain-100daysofai-streamlit-activity-7478764487668482048-uKNb?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
+
 ### 3 - Voice-to-Jira
 
 An AI assistant that uses voice input to create Jira tickets, demonstrating the end-to-end pipeline of transcription, field extraction, and ticket creation.
+
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair-904315355_ai-fastapi-100daysofcode-activity-7480574669771735041-YXnH?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
 
 ### 4 - Viral Idea Generator: RedGen
 
 RedGen mines Reddit's most upvoted, most-discussed posts in a niche, not for the content, but for the hook pattern that made strangers stop and engage. Then it uses Gemini to transplant that exact pattern onto your offer, audience, and tone... turning proof from one platform into a ready-to-shoot Instagram hook, caption, reel outline, and CTA.
 
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair-904315355_100daysofai-buildinpublic-aiagents-activity-7482382398907854848-GPCP?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
+
 ### 5 - Daraz AI Product Finder
 
 A seller-side tool that scrapes real Daraz reviews, discovers what shoppers complain about and wish existed, verifies every claim with a second AI, and surfaces ranked market gaps, the product ideas nobody's selling well yet.
+
+[![LinkedIn Post - Coming Soon...](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
 
 > More exciting AI projects are coming soon!
 
