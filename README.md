@@ -34,7 +34,19 @@ An AI assistant that uses voice input to create Jira tickets, demonstrating the 
 
 ### 4 - Viral Idea Generator: RedGen
 
+RedGen mines Reddit's most upvoted, most-discussed posts in a niche, not for the content, but for the hook pattern that made strangers stop and engage. Then it uses Gemini to transplant that exact pattern onto your offer, audience, and tone... turning proof from one platform into a ready-to-shoot Instagram hook, caption, reel outline, and CTA.
+
+### 5 - Daraz AI Product Finder
+
+A seller-side tool that scrapes real Daraz reviews, discovers what shoppers complain about and wish existed, verifies every claim with a second AI, and surfaces ranked market gaps, the product ideas nobody's selling well yet.
+
 > More exciting AI projects are coming soon!
+
+## Tech Stack (so far)
+
+<p align="center">
+<img width="662" height="291" alt="Screenshot 2026-07-14 at 3 16 38 pm" src="https://github.com/user-attachments/assets/62772f69-e629-4abc-88fa-eec6dcb8daa8" />
+</p>
 
 ## Why This Challenge?
 
