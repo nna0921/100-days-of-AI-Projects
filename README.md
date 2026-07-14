@@ -18,16 +18,17 @@ Throughout this challenge, I will:
 
 ## 📂 Projects
 
-### 1 — YouTube Learning Agent
+### 1 - YouTube Learning Agent
 
 An AI-powered learning assistant that transforms YouTube videos into structured study material, making it easier to learn from educational content.
 Email this agent on **youtubelearningagent@gmail.com** to get a reply!
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair-904315355_ai-generativeai-gemini-activity-7477677370947264512-4R4h?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
 
-### 2 — RBAC-RAG Chatbot
+### 2 - RBAC-RAG Chatbot
 
 A Retrieval-Augmented Generation (RAG) chatbot with **Role-Based Access Control (RBAC)**, designed to explore secure AI applications with different user permissions.
 
-### 3 — Voice-to-Jira
+### 3 - Voice-to-Jira
 
 An AI assistant that uses voice input to create Jira tickets, demonstrating the end-to-end pipeline of transcription, field extraction, and ticket creation.
 
