@@ -1,0 +1,825 @@
+{
+  "discovered_aspects": [
+    "Sound Quality",
+    "Battery Life",
+    "Comfort and Fit",
+    "Charging and Power Bank Performance",
+    "Build Quality and Durability",
+    "Packaging and Delivery",
+    "Connectivity and Sync Issues",
+    "Microphone and Call Performance"
+  ],
+  "per_product_scorecard": [
+    {
+      "product_name": "i7s Double and i12 Pod Wireless Bluetooth HandFree with Power Bank Stereo Earphones White bluetooth ear phone for all cell phones use",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 8,
+          "quotes": [
+            "The sound is very clear and good.",
+            "Sound quality is better than others; not too loud and not too low, it's good.",
+            "Sound Quality: 10/10."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.87,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 7,
+          "quotes": [
+            "Battery Life: 5 to 7 hours.",
+            "Battery timing is also very good.",
+            "I charged it to 42 percent and in 5 minutes it showed me 0 percent battery."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.64,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 8,
+          "quotes": [
+            "Comfort: Best.",
+            "They are really comfortable to wear.",
+            "Comfort: 10/10."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.93,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Charging and Power Bank Performance",
+          "score": 5,
+          "quotes": [
+            "The only issue is the charging wire quality is low and the wire is very short.",
+            "the AirPods power bank is not working correctly.",
+            "Charging time within the case is really quick."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 6,
+          "quotes": [
+            "the speaker was a bit torn from inside or damaged.",
+            "The product is exactly as shown.",
+            "Its quality is good."
+          ],
+          "sentiment_check": null
+        }
+      ]
+    },
+    {
+      "product_name": "Air 31 Airpod dual 5.2 Earbuds handfree bluetooth Wireless Earbuds Headphones I7 Mini Bluetooth Headset Earbud Single Wireless Earphone With Mic Stereo For all phones",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 6,
+          "quotes": [
+            "Sound Quality: Awesome.",
+            "Sound Quality: 0.",
+            "sound is slow."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 4,
+          "quotes": [
+            "Battery Life: Bad.",
+            "Battery Life: 100.",
+            "Battery life is exactly 2 hours and they charge fully in just 25 minutes."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.71,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 7,
+          "quotes": [
+            "Comfort: Superb.",
+            "Comfort: 0.",
+            "Comfort: Good."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.81,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 5,
+          "quotes": [
+            "the earbuds are defective; they are not even turning on.",
+            "One side works and the other does not.",
+            "Quality is good."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Packaging and Delivery",
+          "score": 4,
+          "quotes": [
+            "Charging cable was missing.",
+            "My parcel arrived in a very bad condition.",
+            "Good packaging and fast delivery."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.79,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "Audionic Airbud 550 Quad MIC ENC Earbuds | Gaming Mode | IPx4 Water Proof TWS Wireless Earbuds With 26 Hour Playtime Bluetooth Ear buds And Headphones",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 9,
+          "quotes": [
+            "Sound Quality: too good.",
+            "Sound Quality: Outstanding.",
+            "Sound Quality: 9.5/10."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.82,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 9,
+          "quotes": [
+            "Battery Life: Top notch.",
+            "Battery Life: 10/10.",
+            "Can use them for 2-3 days on a single charge of the case."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.83,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 8,
+          "quotes": [
+            "Comfort: 100% satisfied.",
+            "long-time wear hurts the ear, a little tight for me.",
+            "Comfort: 8/10 (they should make adjustable sizes)."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.84,
+            "disagreement": true
+          }
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 9,
+          "quotes": [
+            "The earphones and case are sturdy as heck.",
+            "I've dropped them more than 10 times and not even a scratch.",
+            "100% original, no copy."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.67,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Microphone and Call Performance",
+          "score": 8,
+          "quotes": [
+            "ENC function works quite well.",
+            "The call quality is also very good.",
+            "Quad mic is too good."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.78,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "M10 & M90 & i12 black Double Wireless 2 Air pod Bluetooth Hand Free with Power Bank Earphones White bluetooth ear phone for all cell phones",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 7,
+          "quotes": [
+            "Sound quality is best.",
+            "Sound quality is very bad.",
+            "Sound Quality: Perfect."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.53,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 5,
+          "quotes": [
+            "the battery looks weak.",
+            "battery timing is very low.",
+            "Battery Life: Good but earbuds don't have much backup."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 6,
+          "quotes": [
+            "bigger in size, does not fit comfortably in ears.",
+            "Comfort: Satisfaction.",
+            "Comfort: 10/10."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Microphone and Call Performance",
+          "score": 3,
+          "quotes": [
+            "mic is a bit low quality.",
+            "Mic quality is not good. Very difficult to hear voice during a call.",
+            "voice is clear even 50 feet away from the mobile."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.89,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "Original M10 & M90 Air pod TWS Double Wireless tws Bluetooth Hand Free with Power Bank Stereo Earphones White bluetooth ear phone for all cell phones use",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 7,
+          "quotes": [
+            "Sound Quality: Normal.",
+            "Sound Quality: Good but not the best.",
+            "Sound Quality: 10/10."
+          ],
+          "sentiment_check": {
+            "label": "neutral",
+            "confidence": 0.42,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 6,
+          "quotes": [
+            "Battery Life: 7/10.",
+            "left earbud's battery dies very quickly.",
+            "Battery Life: Good."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Charging and Power Bank Performance",
+          "score": 4,
+          "quotes": [
+            "power bank drains quickly when charging a phone.",
+            "cannot be used as a power bank as advertised because the case doesn't have the battery capacity.",
+            "internal battery wire was disconnected."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.71,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 6,
+          "quotes": [
+            "box and AirPods were open and looked used.",
+            "quality is the best for this price range.",
+            "one side is working to its full capacity, the other one is not that good."
+          ],
+          "sentiment_check": null
+        }
+      ]
+    },
+    {
+      "product_name": "Audionic Airbud 425 Quad Mic | ENC Wireless Earbuds | Gaming mode Low Latency TWS Earbud With 40 Hours Playtime | IPx4 Water Proof Wireless Earphones With Voice Assistance Bluetooth Ear buds And Headphones",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 9,
+          "quotes": [
+            "Sound Quality: The sound quality is very wonderful.",
+            "Sound Quality: 100000000000%.",
+            "sound quality can be improved. When the volume is high, the sound of the earbuds is not clear."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.79,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 9,
+          "quotes": [
+            "Battery Life: Long-lasting.",
+            "battery timing is continuously 7 hours.",
+            "Battery Life: Almost 5 to 7 days."
+          ],
+          "sentiment_check": {
+            "label": "neutral",
+            "confidence": 0.74,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 8,
+          "quotes": [
+            "Comfort: Easy to fit in ears.",
+            "Comfort: 1.",
+            "Comfort: Super."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.73,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Connectivity and Sync Issues",
+          "score": 8,
+          "quotes": [
+            "Gaming mode is a beast.",
+            "Gaming Performance: Good but not perfect.",
+            "no delay in the sound."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.83,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "TWS pod_ with Super Sound & High Quality Touch Sensors True Stereo Headphones with Built in Mic 10m Transmission Bluetooth Wireless Earbuds , Chargng Case Sport Headset for all Bluetooth Smart devices",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 7,
+          "quotes": [
+            "Sound Quality: Best sound quality 10/10.",
+            "Sound Quality: 3/10.",
+            "it doesn't come with a microphone."
+          ],
+          "sentiment_check": {
+            "label": "neutral",
+            "confidence": 0.51,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 4,
+          "quotes": [
+            "Battery has no backup, very very poor quality.",
+            "even after 100% charging, they turn off in 15 minutes.",
+            "The battery timing is a little short."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.94,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 7,
+          "quotes": [
+            "Comfort: Amazing 10/10.",
+            "Comfort: 4/10.",
+            "Comfort: Doesn't feel like it's in your ear."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.66,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "Original M90 TWS Wireless Earbuds Touch Control 5.3 Headset Waterproof 9D Hifi Quality Earphone Stereo Sports Headphones With Microphone Gaming Buds with Power Bank",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 6,
+          "quotes": [
+            "Sound Quality: Best.",
+            "Sound Quality: Third class.",
+            "Sound quality is good."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 4,
+          "quotes": [
+            "they only last 1-2 hours.",
+            "Battery Life: Useless, only lasts one hour.",
+            "Battery timing is 5 days."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.48,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 5,
+          "quotes": [
+            "Comfort: Number 1.",
+            "Comfort: Useless.",
+            "Comfort: Not that comfortable, my ears ache if worn for too long."
+          ],
+          "sentiment_check": null
+        }
+      ]
+    },
+    {
+      "product_name": "M10 TWS Wireless Earbuds Bluetooth 5.1 Touch Control Waterproof LED Display Charging Box 9D HiFi Sound for Gaming and Gym",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 8,
+          "quotes": [
+            "Sound quality is perfect.",
+            "Sound Quality: Normal.",
+            "Sound quality is expert level."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.84,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 6,
+          "quotes": [
+            "Battery timing is good for 979 rupees, a total of 14 hours.",
+            "The battery timing is not that good.",
+            "Battery timing is 3-4 hours."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 6,
+          "quotes": [
+            "Comfort: Best.",
+            "Comfort: Normal, but wearing them for a long time causes ear pain.",
+            "Comfort: 7/10."
+          ],
+          "sentiment_check": null
+        }
+      ]
+    },
+    {
+      "product_name": "🔥 TWS Wireless Earbuds with LED Display – ENC Noise Cancellation, HiFi Stereo, Bluetooth 5.3 – Available in Black & White 🎧",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 6,
+          "quotes": [
+            "Sound quality is very good.",
+            "Sound quality is so terrible.",
+            "Sound Quality: Sound does not sync with video."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 4,
+          "quotes": [
+            "Battery life: Nice.",
+            "Battery Life: Terrible, 1/10.",
+            "Battery Life: 3-4 hours easily."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.49,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 4,
+          "quotes": [
+            "It is useless, and faulty.",
+            "the case is loose.",
+            "The case is flimsy."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.95,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "Original M10 and Mini Bluetooth Ear Bud - Handfree - EarPhone - Ear Bud Premium Quality Bluetooth Handsfree For All Mobile",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 7,
+          "quotes": [
+            "Sound Quality: Best.",
+            "Sound Quality: Low and worst.",
+            "Sound Quality: Good."
+          ],
+          "sentiment_check": {
+            "label": "neutral",
+            "confidence": 0.41,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 5,
+          "quotes": [
+            "The timing is low, 35 minutes.",
+            "Battery timing is good, Mashallah.",
+            "Earbud is not charging."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 5,
+          "quotes": [
+            "It is a copy, but it is good.",
+            "M10 C-grade. There is no magnet for opening and closing.",
+            "Only one earbud arrived."
+          ],
+          "sentiment_check": null
+        }
+      ]
+    },
+    {
+      "product_name": "F2 TWS M10 Bluetooth 5.1 Wireless Ear-bud with Charging Box, 3500mAh, Waterproof Sports Headphones, Stereo Headset with Built-in Microphone, New",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 7,
+          "quotes": [
+            "Sound Quality: Good.",
+            "Sound Quality: A1.",
+            "sound quality is a bit distorted at high volume."
+          ],
+          "sentiment_check": {
+            "label": "neutral",
+            "confidence": 0.51,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 6,
+          "quotes": [
+            "Battery Life: 2 hours continuous playback.",
+            "Battery timing is excellent.",
+            "Battery timing is not so long."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 6,
+          "quotes": [
+            "Comfort: 100%.",
+            "They hurt my ears a little bit.",
+            "It does not fit well in my ear and keeps falling out."
+          ],
+          "sentiment_check": null
+        }
+      ]
+    },
+    {
+      "product_name": "Zero® Wave Pro Wireless Earbuds | Bluetooth 5.3v Gaming Earbuds | 13mm Base Driver Earbuds | Quad Mic ENC Earbuds for Calling | Noise Cancelling Earbuds | Bluetooth Earbuds for iOS and Android | Best Earbuds for Men and Women",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 9,
+          "quotes": [
+            "Sound Quality: 10/10.",
+            "Sound Quality is average.",
+            "Sound Quality: 100%."
+          ],
+          "sentiment_check": {
+            "label": "neutral",
+            "confidence": 0.73,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 9,
+          "quotes": [
+            "Battery Life: Impressive.",
+            "Battery Life: Super duper long.",
+            "battery timing is timeless."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.87,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 9,
+          "quotes": [
+            "Comfort: 100%.",
+            "Comfort: Extreme.",
+            "Comfort: Satisfactory."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.7,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "Air31 Earbuds Wireless Earphones Transparent crystal frame Bluetooth headset Air 31 earbuds Digital Display powerbank for earbuds charging",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 8,
+          "quotes": [
+            "Sound Quality: Excellent.",
+            "Sound Quality: 20.",
+            "Sound Quality: 10/7."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.64,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 7,
+          "quotes": [
+            "Battery Life: Best.",
+            "Battery Life: 10.",
+            "Battery timing is very good."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.87,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Build Quality and Durability",
+          "score": 7,
+          "quotes": [
+            "Transparent crystal frame.",
+            "charging jack was damaged.",
+            "Quality is 9/10."
+          ],
+          "sentiment_check": {
+            "label": "negative",
+            "confidence": 0.57,
+            "disagreement": false
+          }
+        }
+      ]
+    },
+    {
+      "product_name": "M19 And M29 ,F9 TWS Air pod_ with Super Sound & High Quality Touch Sensors True Stereo Headphones with Built in Mic 10m Transmission Bluetooth Wireless Earbuds , Case Sport Headset for all Bluetooth Smart devices.",
+      "aspect_scores": [
+        {
+          "aspect": "Sound Quality",
+          "score": 7,
+          "quotes": [
+            "Sound Quality: Best/Excellent.",
+            "Sound Quality: 8.",
+            "Sound Quality: Good."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.84,
+            "disagreement": false
+          }
+        },
+        {
+          "aspect": "Battery Life",
+          "score": 5,
+          "quotes": [
+            "Battery Life: About 5 hours.",
+            "Battery Life: Very bad.",
+            "Battery timing is 3-4 hours."
+          ],
+          "sentiment_check": null
+        },
+        {
+          "aspect": "Comfort and Fit",
+          "score": 7,
+          "quotes": [
+            "Comfort: 100%.",
+            "Comfort: No comfort.",
+            "Comfort: Great."
+          ],
+          "sentiment_check": {
+            "label": "positive",
+            "confidence": 0.79,
+            "disagreement": false
+          }
+        }
+      ]
+    }
+  ],
+  "missing_features": [
+    {
+      "feature": "Reliable Quality Control/Unit Consistency",
+      "evidence_count": 50,
+      "example_quotes": [
+        "One works and the other doesn't.",
+        "They sent a defective piece.",
+        "It won't even turn on and it's not charging."
+      ]
+    },
+    {
+      "feature": "Battery Health Accuracy/Longevity",
+      "evidence_count": 35,
+      "example_quotes": [
+        "The battery dies after one use.",
+        "It doesn't even last 2 minutes.",
+        "The power bank is only for the name, not for actual use."
+      ]
+    },
+    {
+      "feature": "Included Charging Cables and Accessories",
+      "evidence_count": 25,
+      "example_quotes": [
+        "Charging cable was missing.",
+        "No charging cable was included.",
+        "I was charged extra for the cover, but what is the use?"
+      ]
+    },
+    {
+      "feature": "Accurate Color/Design Representation",
+      "evidence_count": 15,
+      "example_quotes": [
+        "The color I ordered is not what I received.",
+        "Only one of them works, the other is broken.",
+        "In the picture you showed 2 earbuds, but you only sent 1."
+      ]
+    }
+  ],
+  "product_concepts": [
+    {
+      "concept": "QC-Verified Premium Bundle",
+      "rationale": "Customers repeatedly complain about receiving defective units (one earbud not working, not charging) and missing accessories; a product that guarantees a multi-point inspection before shipping would disrupt this market."
+    },
+    {
+      "concept": "Actual-Capacity Battery Power Bank Case",
+      "rationale": "Shoppers are frustrated by 'fake' power bank claims where the case cannot charge a phone or drains instantly; a variant with a transparently labeled, verified-capacity power bank would satisfy heavy-usage users."
+    },
+    {
+      "concept": "Ergonomic Fit Kit Variant",
+      "rationale": "Many users report discomfort, size mismatches, or earbuds falling out; a model that includes multiple sizes of silicon tips (specifically marketed as a fit-focused set) would solve the common complaint that 'they don't fit well'."
+    }
+  ]
+}

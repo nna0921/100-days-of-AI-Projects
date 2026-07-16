@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+*.DS_Store
+daraz_reviews_dataset_*.json
+cleaned_reviews_*.json
+insights_*.json
+CLAUDE.md
+DEVLOG.md
+PIPELINE.md

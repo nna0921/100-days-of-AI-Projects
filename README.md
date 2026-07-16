@@ -47,7 +47,7 @@ RedGen mines Reddit's most upvoted, most-discussed posts in a niche, not for the
 
 A seller-side tool that scrapes real Daraz reviews, discovers what shoppers complain about and wish existed, verifies every claim with a second AI, and surfaces ranked market gaps, the product ideas nobody's selling well yet.
 
-[![LinkedIn Post - Coming Soon...](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
 
 > More exciting AI projects are coming soon!
 
