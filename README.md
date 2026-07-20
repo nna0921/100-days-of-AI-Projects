@@ -47,6 +47,12 @@ RedGen mines Reddit's most upvoted, most-discussed posts in a niche, not for the
 
 A seller-side tool that scrapes real Daraz reviews, discovers what shoppers complain about and wish existed, verifies every claim with a second AI, and surfaces ranked market gaps, the product ideas nobody's selling well yet.
 
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair_100daysofcode-buildinpublic-genai-ugcPost-7483504432278781952-RKDX/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
+
+### 6 - Obsidian AI Second Brain
+
+An AI second brain, a personal knowledge graph (Neo4j) that extracts entities/relationships from your notes, decays and consolidates old facts and resolves contradictions over time ?
+
 [![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
 
 > More exciting AI projects are coming soon!
