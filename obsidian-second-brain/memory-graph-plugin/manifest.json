@@ -1,0 +1,9 @@
+{
+  "id": "memory-graph",
+  "name": "Memory Graph",
+  "version": "0.1.0",
+  "minAppVersion": "1.0.0",
+  "description": "Builds a self-updating knowledge graph from your vault: extracts entities and relationships with a local LLM and writes them to Neo4j.",
+  "author": "you",
+  "isDesktopOnly": true
+}

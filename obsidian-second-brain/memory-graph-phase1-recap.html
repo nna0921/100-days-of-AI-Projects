@@ -1,0 +1,725 @@
+<style>
+  :root {
+    --bg: #EFF2F0;
+    --surface: #E2E8E4;
+    --surface-2: #D5DED8;
+    --ink: #142120;
+    --ink-soft: #48564F;
+    --ink-faint: #6C7A73;
+    --line: #C3CDC6;
+    --accent: #0E7679;
+    --accent-2: #B3661F;
+    --accent-contrast: #F4F8F6;
+    --code-bg: #E2E8E4;
+    --shadow: 0 1px 0 rgba(20, 33, 32, 0.04);
+    --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0F1614;
+      --surface: #17211F;
+      --surface-2: #1E2A27;
+      --ink: #E7ECE9;
+      --ink-soft: #A7B5AF;
+      --ink-faint: #71827B;
+      --line: #293633;
+      --accent: #45C4C4;
+      --accent-2: #E3A661;
+      --accent-contrast: #0B1110;
+      --code-bg: #131C1A;
+      --shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0F1614;
+    --surface: #17211F;
+    --surface-2: #1E2A27;
+    --ink: #E7ECE9;
+    --ink-soft: #A7B5AF;
+    --ink-faint: #71827B;
+    --line: #293633;
+    --accent: #45C4C4;
+    --accent-2: #E3A661;
+    --accent-contrast: #0B1110;
+    --code-bg: #131C1A;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+    color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --bg: #EFF2F0;
+    --surface: #E2E8E4;
+    --surface-2: #D5DED8;
+    --ink: #142120;
+    --ink-soft: #48564F;
+    --ink-faint: #6C7A73;
+    --line: #C3CDC6;
+    --accent: #0E7679;
+    --accent-2: #B3661F;
+    --accent-contrast: #F4F8F6;
+    --code-bg: #E2E8E4;
+    --shadow: 0 1px 0 rgba(20, 33, 32, 0.04);
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+  }
+
+  body {
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent); color: var(--accent-contrast); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; }
+
+  .deck {
+    position: relative;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3rem);
+  }
+
+  /* ---------- rail ---------- */
+  .rail {
+    position: absolute;
+    left: clamp(0.5rem, 2vw, 1.25rem);
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--line);
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .rail { display: block; }
+    .deck { padding-left: 5rem; }
+  }
+  .rail-node {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--ink-faint);
+    transition: border-color 0.4s ease, background 0.4s ease;
+  }
+  .rail-node.is-active { border-color: var(--accent); background: var(--accent); }
+
+  /* ---------- section rhythm ---------- */
+  section {
+    position: relative;
+    padding-block: clamp(2.75rem, 6vw, 4.5rem);
+    border-bottom: 1px solid var(--line);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .eyebrow {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.9rem;
+  }
+  .eyebrow .idx { color: var(--ink-faint); }
+
+  .prose {
+    max-width: 62ch;
+    color: var(--ink-soft);
+  }
+  .prose strong { color: var(--ink); font-weight: 600; }
+
+  code, .mono {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+  }
+  code {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.08em 0.4em;
+    color: var(--ink);
+  }
+
+  /* ---------- reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ================= COVER ================= */
+  .cover {
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .cover .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.4rem;
+  }
+  .cover h1 {
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .cover .sub {
+    margin-top: 1.4rem;
+    max-width: 48ch;
+    font-size: 1.18rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .cover .meta {
+    margin-top: 2.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+  .cover .meta span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .cover .meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-2); }
+
+  /* ================= ARCHITECTURE DIAGRAM ================= */
+  .diagram {
+    margin-top: 2.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+  }
+  .node-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    min-width: 168px;
+    box-shadow: var(--shadow);
+  }
+  .node-box .label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .node-box .name {
+    margin-top: 0.3rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+  .node-box.accent { border-color: var(--accent); }
+  .node-box.accent .label { color: var(--accent); }
+  .flow-arrow {
+    flex: 0 0 auto;
+    width: clamp(28px, 4vw, 56px);
+    height: 2px;
+    background: var(--ink-faint);
+    position: relative;
+    margin: 0 0.4rem;
+  }
+  .flow-arrow::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid var(--ink-faint);
+    border-top: 2px solid var(--ink-faint);
+  }
+  .fan {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  @media (max-width: 640px) {
+    .diagram { flex-direction: column; align-items: flex-start; }
+    .flow-arrow { width: 2px; height: 24px; margin: 0.2rem 0 0.2rem 10px; }
+    .flow-arrow::after { right: 50%; top: -1px; transform: translate(50%, 0) rotate(135deg); }
+  }
+
+  /* ================= CHECKLIST / CHECKPOINTS ================= */
+  .checkpoints {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .checkpoint {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    padding: 1rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .checkpoint .num {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--accent);
+    padding-top: 0.15rem;
+  }
+  .checkpoint h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .checkpoint p {
+    margin: 0.35rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    max-width: 58ch;
+  }
+
+  /* ================= BUG CARDS ================= */
+  .bugs { margin-top: 2rem; display: grid; gap: 1.4rem; }
+  .bug {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  .bug .tag {
+    display: inline-flex;
+    width: fit-content;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    border: 1px solid var(--accent-2);
+    border-radius: 100px;
+    padding: 0.18em 0.6em;
+  }
+  .bug h3 { font-family: var(--font-body); font-size: 1.05rem; font-weight: 700; }
+  .bug p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+  .diff {
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    display: grid;
+    gap: 0.4rem;
+    overflow-x: auto;
+  }
+  .diff .before { color: var(--ink-faint); }
+  .diff .before::before { content: "− "; color: var(--ink-faint); }
+  .diff .after { color: var(--ink); }
+  .diff .after::before { content: "+ "; color: var(--accent); }
+
+  /* ================= RESULTS ================= */
+  .results {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem;
+  }
+  @media (max-width: 700px) { .results { grid-template-columns: 1fr; } }
+  .run {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.2rem 1.3rem 1.4rem;
+  }
+  .run .run-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .run .run-title {
+    margin-top: 0.3rem;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+  }
+  .stat-row {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem 1rem;
+  }
+  .stat {
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .n {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    color: var(--ink);
+    display: block;
+    line-height: 1.1;
+  }
+  .stat.pos .n { color: var(--accent); }
+  .stat .l {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ================= CLEANUP TABLE ================= */
+  .cleanup-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+  @media (max-width: 700px) { .cleanup-grid { grid-template-columns: 1fr; } }
+  .cleanup-col h3 {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .cleanup-col.removed h3 { color: var(--ink-faint); }
+  .cleanup-col.kept h3 { color: var(--accent); }
+  .cleanup-col ul { margin: 0.8rem 0 0; padding: 0; list-style: none; display: grid; gap: 0.55rem; }
+  .cleanup-col li {
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    padding-left: 1.1rem;
+    position: relative;
+  }
+  .cleanup-col.removed li::before { content: "×"; position: absolute; left: 0; color: var(--ink-faint); }
+  .cleanup-col.kept li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); }
+
+  /* ================= NEXT ================= */
+  .next-list { margin-top: 2rem; display: grid; gap: 1.6rem; }
+  .next-item { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.9rem; }
+  .next-item .priority {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    padding-top: 0.2rem;
+  }
+  .next-item.primary .priority { color: var(--accent-2); }
+  .next-item h3 { font-family: var(--font-body); font-weight: 700; font-size: 1.05rem; }
+  .next-item.primary h3 { color: var(--ink); }
+  .next-item p { margin: 0.35rem 0 0; color: var(--ink-soft); max-width: 60ch; font-size: 0.95rem; }
+  .badge {
+    display: inline-block;
+    margin-left: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    padding: 0.12em 0.5em;
+    border-radius: 100px;
+  }
+  .badge.now { background: var(--accent-2); color: var(--accent-contrast); }
+  .badge.later { border: 1px solid var(--line); color: var(--ink-faint); }
+
+  footer {
+    padding-block: 2.5rem 3.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+</style>
+
+<div class="deck">
+  <div class="rail" id="rail"></div>
+
+  <section class="cover" data-rail="Start">
+    <div class="kicker">Phase 1 — build recap</div>
+    <h1>Memory Graph</h1>
+    <p class="sub">Porting a self-updating personal knowledge graph from a Python CLI into a native Obsidian plugin — local LLM extraction, written straight to a graph database, no paid APIs.</p>
+    <div class="meta">
+      <span><span class="dot"></span>2026-07-20</span>
+      <span>Obsidian</span>
+      <span>Ollama · llama3.1:8b</span>
+      <span>Neo4j 5 Community</span>
+    </div>
+  </section>
+
+  <section class="reveal" data-rail="Architecture">
+    <div class="eyebrow"><span class="idx">00</span><span>Architecture</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">One pipeline, three systems</h2>
+    <p class="prose" style="margin-top: 0.8rem;">Notes get read straight from the vault, chunked by heading, sent to a local model for entity and relationship extraction, and merged into a graph — entirely on-device.</p>
+
+    <div class="diagram">
+      <div class="node-box">
+        <div class="label">Source</div>
+        <div class="name">Obsidian vault</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="node-box accent">
+        <div class="label">Plugin</div>
+        <div class="name">memory-graph</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="fan">
+        <div class="node-box">
+          <div class="label">Extraction</div>
+          <div class="name">Ollama</div>
+        </div>
+        <div class="node-box">
+          <div class="label">Storage</div>
+          <div class="name">Neo4j</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" data-rail="Starting point">
+    <div class="eyebrow"><span class="idx">01</span><span>Starting point</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Already had a working pipeline — in Python</h2>
+    <p class="prose" style="margin-top: 0.8rem;"><code>src/memory_graph/</code> already ran ingest → extract → store end to end from the terminal: <code>ingest.py</code> chunked notes, <code>llm.py</code> called Ollama, <code>graph.py</code> wrote MERGE upserts to Neo4j — backed by 7 passing tests. The goal for this phase wasn't to redesign the pipeline, it was to move it natively into Obsidian so ingestion didn't require a separate terminal step.</p>
+  </section>
+
+  <section class="reveal" data-rail="De-risking">
+    <div class="eyebrow"><span class="idx">02</span><span>De-risking</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Proved the two hard connections first</h2>
+    <p class="prose" style="margin-top: 0.8rem;">Before writing any real plugin code, a throwaway spike answered two questions: can Obsidian's renderer reach <strong>Neo4j</strong> over bolt, and can it reach <strong>Ollama</strong>? Neo4j worked via the driver's browser/WebSocket build. Ollama worked via <code>requestUrl()</code>, which routes through Electron's main process — sidestepping renderer CORS entirely, no <code>OLLAMA_ORIGINS</code> environment variable required. Two commands, two green Notices, spike retired once its job was done.</p>
+  </section>
+
+  <section class="reveal" data-rail="Build">
+    <div class="eyebrow"><span class="idx">03</span><span>Build</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Four checkpoints, tested in Obsidian between each</h2>
+    <p class="prose" style="margin-top: 0.8rem;">Every stage below was built, then confirmed working inside Obsidian — settings tab rendered, chunk counts sane, Ollama round-tripped, graph populated — before the next one started.</p>
+
+    <div class="checkpoints">
+      <div class="checkpoint">
+        <div class="num">01</div>
+        <div>
+          <h3>Scaffold + Settings</h3>
+          <p>Plugin shell and a settings tab: Neo4j URI / user / password, Ollama URL / model, and a list of excluded folders.</p>
+        </div>
+      </div>
+      <div class="checkpoint">
+        <div class="num">02</div>
+        <div>
+          <h3>Vault Reading</h3>
+          <p>Via <code>app.vault</code> and <code>app.metadataCache</code> — never Node <code>fs</code>. Frontmatter stripped, chunked ~450 words by heading, strictly read-only.</p>
+        </div>
+      </div>
+      <div class="checkpoint">
+        <div class="num">03</div>
+        <div>
+          <h3>Extraction</h3>
+          <p>Ollama called via <code>requestUrl()</code> with <code>format: json</code>. Each returned triple is validated; malformed ones are skipped, never thrown.</p>
+        </div>
+      </div>
+      <div class="checkpoint">
+        <div class="num">04</div>
+        <div>
+          <h3>Graph Writes</h3>
+          <p>Uniqueness constraints, MERGE on Entity / REL / MENTIONED_IN, a content hash on every <code>:Note</code> for incremental skip, plus <strong>Ingest vault</strong> and <strong>Clear graph</strong> commands.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" data-rail="Caught in testing">
+    <div class="eyebrow"><span class="idx">04</span><span>Caught in testing</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Three things the live run surfaced</h2>
+
+    <div class="bugs">
+      <div class="bug">
+        <span class="tag">Model quirk</span>
+        <h3>Empty object instead of empty array</h3>
+        <p>Ollama's <code>format: json</code> guarantees valid JSON, not the shape asked for — some chunks with no facts came back as <code>{}</code> rather than <code>[]</code>. Now treated as "nothing here," not logged as an error.</p>
+      </div>
+      <div class="bug">
+        <span class="tag">Model quirk</span>
+        <h3>A bare triple instead of a one-item array</h3>
+        <p>Occasionally the model returned a single well-formed triple object at the top level instead of wrapping it in an array. Previously dropped as malformed — now accepted, since it isn't.</p>
+      </div>
+      <div class="bug">
+        <span class="tag">Pre-empted</span>
+        <h3>Wikilinks would have fractured the graph</h3>
+        <p>Flagged before it hit: an unstripped <code>[[Anna]]</code> would extract as a literal-bracketed entity, never matching the plain <code>Anna</code> found elsewhere in prose. Fixed with <code>stripWikilinks()</code>, applied to note body and title before chunking.</p>
+        <div class="diff">
+          <span class="before">Had coffee with [[Anna]] today.</span>
+          <span class="after">Had coffee with Anna today.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" data-rail="Verified">
+    <div class="eyebrow"><span class="idx">05</span><span>Verified</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Two runs, back to back</h2>
+    <p class="prose" style="margin-top: 0.8rem;">The second run is the point — proof the content-hash skip actually works, not just that it compiles.</p>
+
+    <div class="results">
+      <div class="run">
+        <div class="run-label">Ingest vault — run 1</div>
+        <div class="run-title">Full extraction</div>
+        <div class="stat-row">
+          <div class="stat"><span class="n">16 / 16</span><span class="l">notes changed</span></div>
+          <div class="stat"><span class="n">12</span><span class="l">relations written</span></div>
+          <div class="stat"><span class="n">21</span><span class="l">entities</span></div>
+          <div class="stat"><span class="n">24</span><span class="l">mentions</span></div>
+        </div>
+      </div>
+      <div class="run">
+        <div class="run-label">Ingest vault — run 2</div>
+        <div class="run-title">No notes edited</div>
+        <div class="stat-row">
+          <div class="stat pos"><span class="n">0 / 16</span><span class="l">notes changed</span></div>
+          <div class="stat pos"><span class="n">0</span><span class="l">relations written</span></div>
+          <div class="stat"><span class="n">21</span><span class="l">entities (unchanged)</span></div>
+          <div class="stat"><span class="n">24</span><span class="l">mentions (unchanged)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" data-rail="Cleanup">
+    <div class="eyebrow"><span class="idx">06</span><span>Cleanup</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Retired what the spike was for, kept what still works</h2>
+
+    <div class="cleanup-grid">
+      <div class="cleanup-col removed">
+        <h3>Removed</h3>
+        <ul>
+          <li><code>obsidian-plugin-spike/</code> — fully superseded, self-described as throwaway</li>
+          <li>Its installed copy in <code>test-vault/.obsidian/plugins/</code></li>
+          <li><code>.pytest_cache/</code> — stale, regenerates on next run</li>
+        </ul>
+      </div>
+      <div class="cleanup-col kept">
+        <h3>Kept</h3>
+        <ul>
+          <li>Python pipeline — <code>src/</code>, <code>tests/</code> (7/7 passing), <code>sample_vault/</code></li>
+          <li><code>memory-graph-plugin/</code> — the real, active implementation</li>
+          <li><code>docker-compose.yml</code>, <code>.env</code> — shared Neo4j config</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" data-rail="What's next">
+    <div class="eyebrow"><span class="idx">07</span><span>What's next</span></div>
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem);">Contradiction resolution, then the rest</h2>
+
+    <div class="next-list">
+      <div class="next-item primary">
+        <div class="priority">→</div>
+        <div>
+          <h3>Contradiction resolution<span class="badge now">next</span></h3>
+          <p>The actual point of the project. Phase 1 stores conflicting facts as-is — e.g. a note placing someone in Lahore, a later one in Berlin — each keeping its own <code>valid_from</code> / <code>last_seen</code>. Deciding how those resolve is the open problem.</p>
+        </div>
+      </div>
+      <div class="next-item">
+        <div class="priority">→</div>
+        <div>
+          <h3>Wikilinks as their own signal<span class="badge later">deferred</span></h3>
+          <p><code>app.metadataCache.resolvedLinks</code> already has every link in the vault parsed. A hand-typed link is a stronger signal than an LLM inference — a natural fit for confidence 1.0 edges that win by default. Cheap to add, intentionally scoped out until contradiction resolution lands.</p>
+        </div>
+      </div>
+      <div class="next-item">
+        <div class="priority">→</div>
+        <div>
+          <h3>Decay &amp; Graph RAG querying<span class="badge later">queued</span></h3>
+          <p>Temporal decay of unreasserted facts, and question-answering over the graph with citations — both out of scope until the above lands.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>memory-graph · phase 1 recap · obsidian-second-brain</footer>
+</div>
+
+<script>
+  (function () {
+    var sections = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      sections.forEach(function (s) { io.observe(s); });
+    } else {
+      sections.forEach(function (s) { s.classList.add('in-view'); });
+    }
+
+    // Build the left rail nodes from each section's data-rail label,
+    // and keep the nearest one lit as the reader scrolls.
+    var rail = document.getElementById('rail');
+    var railed = Array.prototype.slice.call(document.querySelectorAll('[data-rail]'));
+    if (rail && railed.length) {
+      var nodes = railed.map(function (el) {
+        var dot = document.createElement('div');
+        dot.className = 'rail-node';
+        dot.title = el.getAttribute('data-rail');
+        rail.appendChild(dot);
+        return dot;
+      });
+
+      function placeNodes() {
+        var railRect = rail.getBoundingClientRect();
+        var scrollY = window.scrollY || window.pageYOffset;
+        railed.forEach(function (el, i) {
+          var rect = el.getBoundingClientRect();
+          var top = rect.top + scrollY - (rail.getBoundingClientRect().top + scrollY) + 6;
+          nodes[i].style.top = Math.max(0, top) + 'px';
+        });
+      }
+
+      function updateActive() {
+        var line = window.innerHeight * 0.35;
+        var activeIdx = 0;
+        railed.forEach(function (el, i) {
+          var rect = el.getBoundingClientRect();
+          if (rect.top <= line) activeIdx = i;
+        });
+        nodes.forEach(function (n, i) { n.classList.toggle('is-active', i === activeIdx); });
+      }
+
+      placeNodes();
+      updateActive();
+      window.addEventListener('resize', placeNodes);
+      window.addEventListener('scroll', updateActive, { passive: true });
+    }
+  })();
+</script>

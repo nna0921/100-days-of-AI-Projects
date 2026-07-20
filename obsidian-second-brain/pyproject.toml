@@ -1,0 +1,30 @@
+[project]
+name = "memory-graph"
+version = "0.1.0"
+description = "A self-updating personal knowledge graph built from an Obsidian vault"
+requires-python = ">=3.10"
+dependencies = [
+    "neo4j>=5.19",
+    "ollama>=0.2.1",
+    "sentence-transformers>=3.0.0",
+    "rapidfuzz>=3.9.0",
+    "typer>=0.12.0",
+    "python-dotenv>=1.0.1",
+    "pydantic>=2.7.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2.0"]
+
+[project.scripts]
+memory-graph = "memory_graph.cli:app"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
