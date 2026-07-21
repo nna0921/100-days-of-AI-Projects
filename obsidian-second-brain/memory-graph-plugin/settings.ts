@@ -7,7 +7,9 @@ export interface MemoryGraphSettings {
   neo4jPassword: string;
   ollamaUrl: string;
   ollamaModel: string;
+  ollamaEmbeddingModel: string;
   excludedFolders: string[];
+  syncFolder: string;
 }
 
 export const DEFAULT_SETTINGS: MemoryGraphSettings = {
@@ -16,7 +18,9 @@ export const DEFAULT_SETTINGS: MemoryGraphSettings = {
   neo4jPassword: "",
   ollamaUrl: "http://localhost:11434",
   ollamaModel: "llama3.1:8b",
+  ollamaEmbeddingModel: "nomic-embed-text",
   excludedFolders: [],
+  syncFolder: "Memory Graph/",
 };
 
 export class MemoryGraphSettingTab extends PluginSettingTab {
@@ -95,6 +99,19 @@ export class MemoryGraphSettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName("Ollama embedding model")
+      .setDesc("Used to map predicates the extraction model invents onto the controlled vocabulary.")
+      .addText((text) =>
+        text
+          .setPlaceholder("nomic-embed-text")
+          .setValue(this.plugin.settings.ollamaEmbeddingModel)
+          .onChange(async (value) => {
+            this.plugin.settings.ollamaEmbeddingModel = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
+
     containerEl.createEl("h3", { text: "Ingestion" });
 
     new Setting(containerEl)
@@ -113,5 +130,24 @@ export class MemoryGraphSettingTab extends PluginSettingTab {
           });
         text.inputEl.rows = 4;
       });
+
+    containerEl.createEl("h3", { text: "Vault sync" });
+
+    new Setting(containerEl)
+      .setName("Sync folder")
+      .setDesc(
+        "Where 'Sync to vault' writes one generated note per entity. Fully regenerated on every " +
+          "sync, so treat it as disposable — automatically added to excluded folders so the plugin " +
+          "never ingests its own generated notes."
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("Memory Graph/")
+          .setValue(this.plugin.settings.syncFolder)
+          .onChange(async (value) => {
+            this.plugin.settings.syncFolder = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
   }
 }

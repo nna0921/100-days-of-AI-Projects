@@ -9,3 +9,7 @@ test-vault/
 sample_vault/
 node_modules/
 *.map
+*.swp
+*.swo
+.idea/
+coverage/
