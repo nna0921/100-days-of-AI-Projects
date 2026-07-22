@@ -34,6 +34,8 @@ export interface IngestResult {
   notesScanned: number;
   notesChanged: number;
   relationsWritten: number;
+  relationsControlled: number; // tier 1: controlled-vocabulary predicate, extraction-stage count
+  relationsUncontrolled: number; // tier 2: no controlled match, stored as-is, extraction-stage count
   relationsDropped: number; // referenced a junk entity, post entity-resolution
   ambiguousEntities: number;
   suggestions: number; // merge suggestions left for review — see "Resolve entities"
@@ -106,7 +108,8 @@ export async function ingestVault(
       );
     }
     console.log(
-      `[memory-graph] dropped ${extractionStats.triplesDroppedPredicate} triples (uncontrolled predicate), ` +
+      `[memory-graph] ${extractionStats.triplesControlled} controlled / ` +
+        `${extractionStats.triplesUncontrolled} uncontrolled relations extracted, ` +
         `${junk.length} junk entities, ${suggestions.length} merge suggestions pending review` +
         `${ambiguous.length ? `, ${ambiguous.length} ambiguous entities left unmerged` : ""}.`
     );
@@ -125,6 +128,8 @@ export async function ingestVault(
       notesScanned: notes.length,
       notesChanged: changed.length,
       relationsWritten: resolvedRelations.length,
+      relationsControlled: extractionStats.triplesControlled,
+      relationsUncontrolled: extractionStats.triplesUncontrolled,
       relationsDropped: droppedRelations.length,
       ambiguousEntities: ambiguous.length,
       suggestions: suggestions.length,
