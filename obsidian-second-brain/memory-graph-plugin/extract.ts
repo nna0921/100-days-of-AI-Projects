@@ -5,11 +5,18 @@ import { callOllamaChat, callOllamaEmbed } from "./ollama";
 export interface Triple {
   subject: string;
   subjectType: string;
-  predicate: string; // always a member of CONTROLLED_PREDICATES — see resolveTriples
+  // A CONTROLLED_PREDICATES member when controlled=true; the model's own
+  // predicate normalized to snake_case when controlled=false — see
+  // resolveTriples for the two-tier classification.
+  predicate: string;
   predicateRaw: string;
   object: string;
   objectType: string;
   confidence: number;
+  // true: exact or embedding match against CONTROLLED_PREDICATES — gets
+  // contradiction detection, decay, mutability. false: no controlled match —
+  // stored as-is, visible in the graph, but skipped by both.
+  controlled: boolean;
 }
 
 /** A parsed-and-validated triple whose predicate hasn't been resolved against
@@ -185,21 +192,37 @@ async function getControlledPredicateEmbeddings(settings: MemoryGraphSettings): 
 
 /**
  * Hard predicate enforcement: every predicate that reaches the graph must be
- * a member of CONTROLLED_PREDICATES. A raw predicate that doesn't exactly
- * match is embedded and mapped to the nearest canonical predicate if the
- * cosine similarity clears PREDICATE_SIMILARITY_THRESHOLD; otherwise the
- * whole triple is dropped and logged for review.
+ * a member of CONTROLLED_PREDICATES (tier 1). A raw predicate that doesn't
+ * exactly match is embedded and mapped to the nearest canonical predicate if
+ * the cosine similarity clears PREDICATE_SIMILARITY_THRESHOLD (still tier 1,
+ * just remapped onto the controlled name). Below that threshold, the triple
+ * is NOT dropped — it's kept as tier 2 ("uncontrolled"): the predicate is
+ * normalized to snake_case as-is (no mapping onto the controlled
+ * vocabulary), and every triple carries a `controlled` flag recording which
+ * tier it landed in. Tier 2 edges are written to the graph and shown in
+ * generated notes like any other, but getActiveEdges filters them out, so
+ * contradiction detection (and any future decay pass, which is meant to read
+ * the same query) never sees them — a fact like "visited France" or
+ * "allergic to rice" doesn't fit the controlled vocabulary's single/multi,
+ * mutable/immutable model, so it's excluded from that machinery rather than
+ * forced into it or thrown away.
  *
  * Batches one embedding call per distinct raw predicate value in the input
  * (not one per triple), so a chunk with five triples that all say "uses"
  * only pays for one embedding lookup.
  */
 export interface ExtractionStats {
-  triplesDroppedPredicate: number;
+  triplesControlled: number;
+  triplesUncontrolled: number;
 }
 
 export function newExtractionStats(): ExtractionStats {
-  return { triplesDroppedPredicate: 0 };
+  return { triplesControlled: 0, triplesUncontrolled: 0 };
+}
+
+interface PredicateResolution {
+  predicate: string;
+  controlled: boolean;
 }
 
 export async function resolveTriples(
@@ -209,13 +232,13 @@ export async function resolveTriples(
 ): Promise<Triple[]> {
   if (unresolved.length === 0) return [];
 
-  const resolutions = new Map<string, string | null>();
+  const resolutions = new Map<string, PredicateResolution>();
   const toEmbed: string[] = [];
   for (const t of unresolved) {
     if (resolutions.has(t.predicateRaw)) continue;
     const sanitized = sanitizeSnakeCase(t.predicateRaw);
     if (CONTROLLED_PREDICATES.includes(sanitized)) {
-      resolutions.set(t.predicateRaw, sanitized);
+      resolutions.set(t.predicateRaw, { predicate: sanitized, controlled: true });
     } else {
       toEmbed.push(t.predicateRaw);
     }
@@ -238,25 +261,27 @@ export async function resolveTriples(
         }
       });
       if (best >= PREDICATE_SIMILARITY_THRESHOLD) {
-        resolutions.set(rawPredicate, bestPredicate);
+        resolutions.set(rawPredicate, { predicate: bestPredicate, controlled: true });
       } else {
+        const uncontrolled = sanitizeSnakeCase(rawPredicate);
         console.debug(
-          `[memory-graph] Dropping triple: predicate "${rawPredicate}" has no controlled match ` +
-            `(best "${bestPredicate}" @ ${best.toFixed(2)}, threshold ${PREDICATE_SIMILARITY_THRESHOLD})`
+          `[memory-graph] Storing as uncontrolled: predicate "${rawPredicate}" has no controlled match ` +
+            `(best "${bestPredicate}" @ ${best.toFixed(2)}, threshold ${PREDICATE_SIMILARITY_THRESHOLD}) — ` +
+            `keeping "${uncontrolled}" with controlled=false`
         );
-        resolutions.set(rawPredicate, null);
+        resolutions.set(rawPredicate, { predicate: uncontrolled, controlled: false });
       }
     });
   }
 
   const triples: Triple[] = [];
   for (const t of unresolved) {
-    const predicate = resolutions.get(t.predicateRaw);
-    if (!predicate) {
-      if (stats) stats.triplesDroppedPredicate++;
-      continue;
+    const resolution = resolutions.get(t.predicateRaw)!;
+    if (stats) {
+      if (resolution.controlled) stats.triplesControlled++;
+      else stats.triplesUncontrolled++;
     }
-    triples.push({ ...t, predicate });
+    triples.push({ ...t, predicate: resolution.predicate, controlled: resolution.controlled });
   }
   return triples;
 }

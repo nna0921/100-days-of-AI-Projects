@@ -10,6 +10,8 @@ import {
   deleteEntity,
   getAllMentions,
   getAllEdges,
+  persistMergeSuggestions,
+  deleteMergeSuggestionsReferencing,
   type EntityRecord,
 } from "./graph";
 
@@ -508,6 +510,8 @@ export async function resolveRelationEntities(
     await setEntityAliases(driver, entity);
   }
 
+  await persistMergeSuggestions(driver, suggestions);
+
   return { relations: finalRelations, droppedRelations, ambiguous, junk, suggestions };
 }
 
@@ -567,6 +571,12 @@ export async function resolveExistingGraph(
         canonType: canon.type,
         aliases: canon.aliases,
       });
+      // This auto-merge (shared-context corroborated, so no human review
+      // needed) can resolve a pair an EARLIER ingest run already persisted
+      // as a pending MergeSuggestion — without this, that suggestion node
+      // keeps naming an entity that no longer exists and lingers in the
+      // panel forever, out of sync with what this run actually found.
+      await deleteMergeSuggestionsReferencing(driver, { name: original.name, type: original.type });
     }
     // Persist final aliases even for singleton groups / the surviving node.
     await setEntityAliases(driver, canon);
@@ -575,6 +585,8 @@ export async function resolveExistingGraph(
   for (const j of junk) {
     await deleteEntity(driver, { name: normalizeEntityName(j.raw), type: j.type });
   }
+
+  await persistMergeSuggestions(driver, suggestions);
 
   const entitiesAfter = candidates.length - merges.length - junk.length;
 
