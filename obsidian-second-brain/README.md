@@ -1,143 +1,147 @@
-# Memory Graph — Phase 1
+<p align="center">
+  <img src="assets/memory_graph_wordmark.png" alt="Memory Graph" width="480">
+</p>
 
-A self-updating personal knowledge graph for an Obsidian vault. Phase 1 covers
-the ingest → extract → store pipeline: read markdown notes, extract
-entity/relationship triples with a local LLM, and write them to Neo4j.
+# Memory Graph
 
-This stack is **$0**: Neo4j Community runs in Docker, extraction runs on a
-local Ollama model, and there are no paid APIs. The LLM sits behind a single
-interface (`llm.py`) so swapping in a hosted API later is a one-line config
-change.
+An Obsidian plugin that turns your everyday notes into a self-updating
+personal knowledge graph. Write normally — no manual linking, no tagging.
+Memory Graph reads your vault, extracts entities and relationships with a
+local LLM, and keeps them in Neo4j: tracking what's currently true, what's
+changed over time, and what genuinely contradicts itself.
 
-Decay, contradiction resolution, entity-resolution dedup, and Graph RAG are
-**not** part of Phase 1 — see "Future work" below.
+**Runs entirely locally.** No cloud, no paid APIs, no third party ever sees
+your notes — Neo4j runs in Docker on your machine, extraction runs on a
+local Ollama model. This stack costs $0 to run.
+
+## What it does
+
+- **Extracts facts** from your notes as `(subject, predicate, object)`
+  triples — people, projects, places, orgs, concepts, events, and how
+  they relate.
+- **Catches contradictions.** If two notes assert incompatible facts about
+  the same thing (e.g. two different birthplaces), it flags the conflict
+  for you instead of silently picking one.
+- **Tracks change over time.** A job change or a move isn't a contradiction
+  — it's history. Superseded facts stay visible, with a trail back to when
+  they changed and why.
+- **Deduplicates entities** written under different names ("Kestrel" vs
+  "Kestrel Consulting"), without silently merging anything it isn't sure
+  about — merges always go through a human review step.
+- **Syncs back to your vault** as generated notes, one per entity, so the
+  graph is browsable as plain markdown, not locked away in a database.
+- **A sidebar panel** inside Obsidian shows everything that needs your
+  attention: disputed facts, pending merges, recently superseded facts, and
+  overall graph stats — with a badge on the ribbon icon so you know at a
+  glance whether anything needs a look.
 
 ## Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) running
-- [Ollama](https://ollama.com) installed, with a model pulled:
+- [Ollama](https://ollama.com) installed, with two models pulled:
   ```bash
   brew install ollama
-  ollama pull llama3.1:8b   # or: ollama pull qwen2.5:7b
+  ollama pull llama3.1:8b          # extraction + contradiction adjudication
+  ollama pull nomic-embed-text     # predicate/entity similarity matching
   ```
-  Verify it works: `ollama run llama3.1:8b "return the JSON array [1,2,3]"`
-- Python 3.10+
+- [Obsidian](https://obsidian.md) with the vault you want to use
+- Node.js (to build the plugin)
 
 A 7–8B model needs ~8GB free RAM (16GB total recommended). No GPU required,
-just slower. If your machine can't run it, the only paid fallback is a
-hosted API — see `llm.py`'s `ApiBackend` stub.
+just slower.
 
 ## Setup
 
+**1. Start Neo4j**
 ```bash
-# 1. Start Neo4j
 cp .env.example .env   # edit NEO4J_PASSWORD if you want a different one
 docker compose up -d
-# Neo4j Browser: http://localhost:7474 (user: neo4j, password: from .env)
-
-# 2. Install Python deps
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-# 3. Make sure Ollama is running and has pulled the model
-ollama pull llama3.1:8b
 ```
+Neo4j Browser is at `http://localhost:7474` (user `neo4j`, password from
+`.env`) if you ever want to inspect the graph directly.
 
-## Run
-
+**2. Build the plugin**
 ```bash
-python -m memory_graph.cli ingest ./sample_vault
+cd memory-graph-plugin
+npm install
+npm run build
 ```
 
-This reads every `.md` file in `sample_vault/`, chunks it by heading, calls
-the local LLM for each chunk, and MERGEs the resulting triples into Neo4j.
-Open `http://localhost:7474` and run:
+**3. Install it into your vault**
 
-```cypher
-MATCH (n) RETURN n LIMIT 200
-```
-
-to see the populated graph. Re-running the same command is idempotent —
-edges are matched on `(subject, predicate, object, source_note)`, so
-re-ingesting only refreshes `confidence`/`last_seen`, it doesn't duplicate.
-
-## Tests
-
+Copy (or symlink) `main.js`, `manifest.json`, and `styles.css` into your
+vault's plugin folder:
 ```bash
-pytest
+cp main.js manifest.json styles.css "/path/to/your/vault/.obsidian/plugins/memory-graph/"
 ```
+Then in Obsidian: **Settings → Community plugins → enable "Memory Graph"**.
 
-`test_extract.py` mocks the LLM backend and checks the extraction contract
-(well-formed `Triple`s, malformed items skipped, metadata attached).
-`test_graph.py` asserts idempotent upserts against a real Neo4j instance —
-it auto-skips if Neo4j isn't reachable, so `docker compose up -d` first.
+**4. Configure it**
+
+Open the plugin's settings tab and confirm/set:
+- Neo4j URI, user, password (must match your `.env`)
+- Ollama URL and model names
+- Any folders to exclude from ingestion
+
+## Using it
+
+Everything is available from the command palette (`Cmd/Ctrl+P`), or via the
+ribbon icon (network icon) to open the sidebar panel.
+
+| Command | What it does |
+|---|---|
+| **Update everything** | Runs the full pipeline in one go: ingest → resolve entities → resolve contradictions → sync to vault. The command to reach for normally. |
+| **Ingest vault** | Scans for changed notes and extracts facts from them. Incremental — only reprocesses notes whose content actually changed. |
+| **Resolve entities** | Re-clusters the whole graph to find and merge duplicate entities, or flag ones that need a human decision. |
+| **Resolve contradictions** | Checks all active facts for conflicts and classifies each as a genuine change, a real conflict, or an extraction error. |
+| **Sync to vault** | Regenerates one markdown note per entity, so the graph is readable and linkable as plain notes. |
+| **Clear graph** | Wipes everything in Neo4j. Doesn't touch your vault's markdown files. |
+| **Open Memory Graph panel** | Opens the sidebar review panel. |
+
+### The sidebar panel
+
+Opens in the right sidebar, reads live from Neo4j, and always shows four
+sections, most important first:
+
+1. **Needs review** — disputed facts, with both conflicting claims, the
+   reasoning behind the conflict, and links back to both source notes.
+2. **Pending merges** — duplicate entities waiting on your approval, with
+   any type-mismatch warnings. Click a row to review and approve or reject.
+3. **Recently superseded** — facts that changed, most recent first: what it
+   used to be, until when, what it is now.
+4. **Stats** — entity count, active/superseded/disputed relation counts,
+   pending merges.
+
+Every entity name and source-note link is clickable, jumping straight to the
+relevant generated note or original note. The ribbon icon carries a badge
+with the count of things needing attention (disputed + pending merges), so
+you know before you even open the panel.
 
 ## Project layout
 
 ```
-docker-compose.yml          # neo4j:5-community, ports 7474 / 7687
-pyproject.toml
-.env.example                # NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, LLM_BACKEND, OLLAMA_MODEL
-src/memory_graph/
-  config.py                 # loads .env, picks LLM backend
-  llm.py                    # extract_triples(text) -> list[Triple]; Ollama impl + hosted-API stub
-  ingest.py                 # walks vault, strips frontmatter, chunks by heading (~600 tokens)
-  extract.py                # calls llm.py per chunk, attaches note provenance/timestamps
-  graph.py                  # Neo4j driver, constraints, MERGE upserts
-  cli.py                    # typer: `ingest <path>`
-sample_vault/                # ~15 fake notes: people, projects, places, an org, an event
-tests/
-  test_extract.py
-  test_graph.py
+docker-compose.yml           # neo4j:5-community, ports 7474 / 7687
+.env.example                 # NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, OLLAMA_*
+memory-graph-plugin/
+  main.ts                    # plugin entry point, commands, ribbon icon
+  view.ts                    # the sidebar review panel (ItemView)
+  mergeModal.ts              # merge-suggestion review/approve UI
+  ingest.ts                  # orchestrates scan → extract → resolve → write
+  extract.ts                 # LLM extraction + controlled predicate mapping
+  resolve.ts                 # entity deduplication (exact/fuzzy/embedding)
+  contradictions.ts          # LLM-adjudicated contradiction resolution
+  vaultSync.ts                # generates one markdown note per entity
+  graph.ts                   # all Neo4j reads/writes
+  settings.ts                # plugin settings tab
 ```
 
 ## Graph schema
 
 **Nodes**
-- `(:Entity {name, type, created_at})` — `type` ∈ `Person | Project | Concept | Org | Place | Event`. `name` is stored normalized (trimmed, lowercased) so entity resolution in Phase 2 has a clean base to work from.
-- `(:Note {path, title, ingested_at})`
+- `(:Entity {name, type, aliases, created_at})` — `type` ∈ `Person | Project | Concept | Org | Place | Event`
+- `(:Note {path, title, contentHash, ingested_at})`
+- `(:MergeSuggestion {...})` — the pending-merge queue
 
 **Relationships**
-- `(:Entity)-[:REL {type, confidence, valid_from, last_seen, status, source_note}]->(:Entity)` — `status` defaults to `"active"`; `confidence` (0–1) comes from the extractor; `valid_from`/`last_seen` are the source note's mtime.
+- `(:Entity)-[:REL {type, confidence, valid_from, last_seen, status, source_note, controlled}]->(:Entity)` — `status` ∈ `active | superseded | disputed | rejected`
 - `(:Entity)-[:MENTIONED_IN]->(:Note)`
-
-Phase 1 doesn't *use* `status`/`confidence`/`last_seen` for any logic yet —
-they're written on every edge so Phase 2 (decay + contradiction resolution)
-has the data it needs from day one.
-
-**Constraint**: a uniqueness constraint on `(Entity.name, Entity.type)` is
-created on startup, so `MERGE` never produces duplicate entity nodes.
-
-## Extraction contract
-
-The LLM is asked to return a strict JSON array (Ollama's `format: "json"`
-option enforces this) of:
-
-```json
-[
-  {"subject": "Anna", "subject_type": "Person",
-   "predicate": "works_on", "object": "Memory Graph", "object_type": "Project",
-   "confidence": 0.9}
-]
-```
-
-Each item is validated against a Pydantic `Triple` model; malformed items
-are logged and skipped rather than crashing the ingest run.
-
-## The sample vault's built-in conflict
-
-`sample_vault/people/anna-zubair.md` (dated 2026-02-02) says Anna lives in
-Lahore. `sample_vault/anna-moved-to-berlin.md` (dated 2026-06-15) says she
-moved to Berlin. Phase 1 stores both edges as-is with their respective
-`valid_from`/`last_seen` timestamps — it's Phase 2's contradiction
-resolution that will look at this pair and decide "change over time, mark
-the older one superseded."
-
-## Future work (not in Phase 1)
-
-- Entity resolution (embedding + fuzzy-match dedup of co-referent names)
-- Temporal decay of unreasserted facts
-- Edge consolidation (merge near-duplicate predicates)
-- LLM-adjudicated contradiction resolution
-- Graph RAG question answering with citations
-- Streamlit demo UI
