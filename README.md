@@ -53,7 +53,14 @@ A seller-side tool that scrapes real Daraz reviews, discovers what shoppers comp
 
 An AI second brain, a personal knowledge graph (Neo4j) that extracts entities/relationships from your notes, decays and consolidates old facts and resolves contradictions over time ?
 
+[![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/anna-zubair_ai-knowledgegraphs-secondbrain-ugcPost-7485701806959034368-Uy4b/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFiAa9QBVJHcJqkrBlPq4YzTRrd0iwU1-V0)
+
+### 7 - Job Scout AI
+
+
+
 [![LinkedIn Post](https://img.shields.io/badge/LinkedIn-Project%20Post-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
+
 
 > More exciting AI projects are coming soon!
 

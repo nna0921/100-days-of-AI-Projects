@@ -1,0 +1,7 @@
+streamlit
+python-jobspy
+requests
+pdfplumber
+sentence-transformers
+python-dotenv
+google-genai
