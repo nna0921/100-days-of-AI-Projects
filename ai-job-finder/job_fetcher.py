@@ -35,6 +35,7 @@ import time
 from typing import List, Dict, Optional
 
 import requests
+import streamlit as st
 
 # JobSpy is optional at import time so the app still boots if it's not installed.
 try:
@@ -366,6 +367,7 @@ def split_location(text: str) -> tuple[str, str]:
     return (parts[0] if parts else ""), "us"
 
 
+@st.cache_data(show_spinner=False, ttl=600)
 def fetch_jobs(
     search: str,
     location: str,
@@ -379,6 +381,10 @@ def fetch_jobs(
     """
     Fetch jobs from the best available source, routed to the right country and
     filtered to the candidate's experience level.
+
+    Cached for 10 minutes on the search params, so re-running the same search
+    (or a rerun triggered by an unrelated widget) doesn't re-scrape or burn
+    Adzuna/JobSpy rate limits.
 
     IMPORTANT: `country` must match `location`. If the user searches "Lahore",
     pass country="pk" — otherwise Indeed defaults to the US and returns US jobs.
